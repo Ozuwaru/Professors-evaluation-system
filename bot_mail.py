@@ -12,7 +12,7 @@ def send_email(nombre, destino):
     email.set_content(msg)
     
     smtp= smtplib.SMTP_SSL('smtp.gmail.com')
-    smtp.login(remitente, "contraseña")
+    smtp.login(remitente, "zgzm vvlw cctf kyjo")
     smtp.sendmail(remitente,destino,email.as_string())
     smtp.quit()
     
