@@ -107,7 +107,8 @@ def createTables():
             Create table Preguntas(
 
             ID INT NOT NULL AUTO_INCREMENT primary KEY,
-            Pregunta varchar (60)
+            Pregunta varchar (60),
+            Fecha Date
             );
 
             Create table Respuestas(
@@ -236,6 +237,7 @@ def seedTables():
 
     insertarDatos("Materias","Materia", "%s",
                   [
+                    ("Estadistica 1",),
                     ("Estadistica 2",),
                     ("Bases de datos",),
                     ("INGENIERIA DE SOFTWARE",),
@@ -248,10 +250,12 @@ def seedTables():
                       ("1","1",),
                       ("1","2",),
                       ("1","3",),
+                      ("1","4",),
 
                       ("2","1",),
                       ("2","2",),
                       ("2","3",),
+                      ("2","4",),
                       ],mycursor)
     
 
@@ -259,8 +263,9 @@ def seedTables():
     insertarDatos("ProfesorxMateria", "Profesor,Materia,Seccion","%s,%s,%s",
                   [
         ('1','1', '3D1',),
-        ('2','2', '3D1',),
-        ('3','3', '3D1',),
+        ('1','2', '3D1',),
+        ('2','3', '3D1',),
+        ('3','4', '3D1',),
     ],mycursor)
     mydb.commit()
 
@@ -268,16 +273,17 @@ def seedTables():
     insertarDatos("inscripciones", "Alumno,Materia","%s,%s",
                   [
         ('1', '1',),
+        ('1', '2',),
         ('2', '1',),
         ('3', '1',),
-
-        ('1', '2',),
-        ('2', '2',),
-        ('3', '2',),
 
         ('1', '3',),
         ('2', '3',),
         ('3', '3',),
+
+        ('1', '4',),
+        ('2', '4',),
+        ('3', '4',),
     ],mycursor)
     
     mydb.commit()
@@ -302,6 +308,8 @@ def insertarEncuestasSinExcel():
         (1,4,4,),
         (1,5,5,),
 
+
+
         (2,1,1,),
         (2,2,1,),
         (2,3,1,),
@@ -313,6 +321,31 @@ def insertarEncuestasSinExcel():
         (3,3,5,),
         (3,4,5,),
         (3,5,5,),
+
+        (4,1,5,),
+        (4,2,5,),
+        (4,3,5,),
+        (4,4,5,),
+        (4,5,5,),
+
+        
+       (5,1,1,),
+       (5,2,1,),
+       (5,3,1,),
+       (5,4,1,),
+       (5,5,1,),
+
+       (6,1,5,),
+       (6,2,5,),
+       (6,3,5,),
+       (6,4,5,),
+       (6,5,5,),
+
+       (7,1,5,),
+       (7,2,5,),
+       (7,3,5,),
+       (7,4,5,),
+       (7,5,5,),
     ],mycursor)
 
     mydb.commit()
@@ -387,3 +420,4 @@ insertarDatos("Encuestas","Cupo,pregunta,respuesta", "%s,%s,%s",[
        (6,5,5,),
    ],mycursor)
 mydb.commit();'''
+
