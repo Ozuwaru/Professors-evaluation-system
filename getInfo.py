@@ -352,6 +352,21 @@ def insertarEncuestasSinExcel():
 
 
 
+def insertarUna(Cupo,pregunta,respuesta):
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user=env.dbuser,
+        password=env.dbpassword,
+        database = "proyectoprofes"
+    )
+
+    mycursor = mydb.cursor();
+
+    insertarDatos("Encuestas","Cupo,pregunta,respuesta", "%s,%s,%s",[
+        (Cupo,pregunta,respuesta,),],mycursor)
+    
+    mydb.commit()
+
 
 def login(username, password):
     mydb = mysql.connector.connect(
@@ -367,6 +382,36 @@ def login(username, password):
     result = mycursor.fetchall()
 
     return (result[0][0])
+
+
+
+def registrarInscribir(cedula,nombre,email,carrera,idMateria):
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user=env.dbuser,
+        password=env.dbpassword,
+        database = "proyectoprofes"
+    )
+
+    mycursor = mydb.cursor();
+
+    mydb.commit()
+    insertarDatos("Alumnos", "Cedula,Nombre,Email,Carrera","%s,%s,%s,%s",
+                  [
+        (cedula,nombre,email, carrera,),
+        
+    ],mycursor)
+    mydb.commit()
+    idEstudiante =mycursor.lastrowid
+
+    
+    insertarDatos("inscripciones", "Alumno,Materia","%s,%s",
+                  [
+        (idEstudiante, idMateria,),
+    ],mycursor)
+    
+    mydb.commit()
+
 
 
 '''

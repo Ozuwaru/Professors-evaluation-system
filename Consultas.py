@@ -73,4 +73,31 @@ def consultaCorreosPorMateria(idMateria):
     return Alumnos;
 
 
-print(consultaCorreosPorMateria(1))
+def consultaInscripcionPorCorreo(correo):
+    mycursor = mydb.cursor();
+    
+    comando = """
+           
+            Select i.ID from Alumnos
+            inner join inscripciones i on alumnos.ID = i.Alumno
+            where (alumnos.email like '%s') AND (i.Materia =2);
+        """%(correo)
+    mycursor.execute(comando)
+    idInscrip =mycursor.fetchone()
+    return idInscrip
+
+def consultaP(preg):
+    mycursor = mydb.cursor();
+    
+    comando = """
+           
+            SELECT ID FROM proyectoprofes.respuestas
+            where Respuesta like '%s'
+        """%(preg)
+    mycursor.execute(comando)
+    v =mycursor.fetchone()
+
+    return v[0];
+
+
+
