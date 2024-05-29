@@ -1,12 +1,12 @@
-import env;
 import mysql.connector;
-
+dbuser ="root"
+dbpassword= '1234'
 
 def createDatabase():
     mydb = mysql.connector.connect(
         host="localhost",
-        user=env.dbuser,
-        password=env.dbpassword
+        user=dbuser,
+        password=dbpassword
     )
 
 
@@ -22,8 +22,8 @@ def createDatabase():
 def createTables():
     mydb = mysql.connector.connect(
         host="localhost",
-        user=env.dbuser,
-        password=env.dbpassword,
+        user=dbuser,
+        password=dbpassword,
         database = "proyectoprofes"
     )
 
@@ -52,7 +52,7 @@ def createTables():
 
             CREATE TABLE Materias (
             ID int auto_increment not null,
-            Materia varchar(50) not null unique,
+            Materia varchar(20) not null unique,
             primary key (ID)
             );
 
@@ -107,8 +107,7 @@ def createTables():
             Create table Preguntas(
 
             ID INT NOT NULL AUTO_INCREMENT primary KEY,
-            Pregunta varchar (60),
-            Fecha Date
+            Pregunta varchar (60)
             );
 
             Create table Respuestas(
@@ -140,11 +139,6 @@ def createTables():
                 
             );
 
-
-
-            alter table  profesorxmateria add encuesta  varchar (80);
-            alter table  profesorxmateria add linkEncuesta  text;
-
         '''
     )
 
@@ -169,32 +163,11 @@ def insertarDatos(tabla,columnas,cantidad, info ,cursor):
 '''
 
 
-
-
-def insertarFormID(idMateria,idForm, link):
-    mydb = mysql.connector.connect(
-        host="localhost",
-        user=env.dbuser,
-        password=env.dbpassword,
-        database = "proyectoprofes"
-    )
-    mycursor = mydb.cursor();
-    comando = '''update profesorxmateria 
-        set encuesta = %s,
-        linkEncuesta = %s
-        where ID = %s'''
-    mycursor.execute(comando,(idForm,link,idMateria))
-
-    mydb.commit()
-
-
-
-
 def seedTables():
     mydb = mysql.connector.connect(
         host="localhost",
-        user=env.dbuser,
-        password=env.dbpassword,
+        user=dbuser,
+        password=dbpassword,
         database = "proyectoprofes"
     )
 
@@ -237,8 +210,6 @@ def seedTables():
     insertarDatos("Profesores", "Cedula,Nombre, FechaIngreso, FechaNacimiento,Escuela","%s,%s,%s,%s,%s",
                  [
          (11112222,"Luis Hernandez","2016-04-23","1970-04-23",1,),
-         (12355132,"Yelenia","2016-04-23","1970-04-23",1,),
-         (23522158,"Adalides ","2016-04-23","1970-04-23",1,),
      ],mycursor )
     
     mydb.commit()
@@ -254,44 +225,23 @@ def seedTables():
         ('30365852','Oswald Torrealba','oswaldtg1@gmail.com', '1',),
         ('30453752','Frank Diaz','p1@gmail.com', '1',),
         ('29568456','Victor Rojaz ','p2@gmail.com', '1',),
-        ('56464564','Maria Rojaz ','p3@gmail.com', '2',),
-        ('21315548','Juan Rojaz ','p4@gmail.com', '1',),
-        ('13584532','Carlos Rojaz ','p5@gmail.com', '1',),
     ],mycursor)
     mydb.commit()
     
 
     insertarDatos("Materias","Materia", "%s",
-                  [
-                    ("Estadistica 1",),
-                    ("Estadistica 2",),
-                    ("Bases de datos",),
-                    ("INGENIERIA DE SOFTWARE",),
-                    ],mycursor)
-
+                  [("Estadistica 2",),("Estadistica 1",),],mycursor)
     
     mydb.commit()
     insertarDatos("MateriasxCarrera","Carrera,Materia","%s,%s",
-                  [
-                      ("1","1",),
-                      ("1","2",),
-                      ("1","3",),
-                      ("1","4",),
-
-                      ("2","1",),
-                      ("2","2",),
-                      ("2","3",),
-                      ("2","4",),
-                      ],mycursor)
+                  [("1","1",),("1","2",),],mycursor)
     
 
 
     insertarDatos("ProfesorxMateria", "Profesor,Materia,Seccion","%s,%s,%s",
                   [
-        ('1','1', '3D1',),
-        ('1','2', '3D1',),
-        ('2','3', '3D1',),
-        ('3','4', '3D1',),
+        ('1','1', '1',),
+        ('1','2', '1',),
     ],mycursor)
     mydb.commit()
 
@@ -299,17 +249,8 @@ def seedTables():
     insertarDatos("inscripciones", "Alumno,Materia","%s,%s",
                   [
         ('1', '1',),
-        ('1', '2',),
         ('2', '1',),
-        ('3', '1',),
-
-        ('1', '3',),
-        ('2', '3',),
-        ('3', '3',),
-
-        ('1', '4',),
-        ('2', '4',),
-        ('3', '4',),
+        ('2', '1',),
     ],mycursor)
     
     mydb.commit()
@@ -320,8 +261,8 @@ def seedTables():
 def insertarEncuestasSinExcel():
     mydb = mysql.connector.connect(
         host="localhost",
-        user=env.dbuser,
-        password=env.dbpassword,
+        user=dbuser,
+        password=dbpassword,
         database = "proyectoprofes"
     )
 
@@ -334,8 +275,6 @@ def insertarEncuestasSinExcel():
         (1,4,4,),
         (1,5,5,),
 
-
-
         (2,1,1,),
         (2,2,1,),
         (2,3,1,),
@@ -347,58 +286,52 @@ def insertarEncuestasSinExcel():
         (3,3,5,),
         (3,4,5,),
         (3,5,5,),
-
-        (4,1,5,),
-        (4,2,5,),
-        (4,3,5,),
-        (4,4,5,),
-        (4,5,5,),
-
-        
-       (5,1,1,),
-       (5,2,1,),
-       (5,3,1,),
-       (5,4,1,),
-       (5,5,1,),
-
-       (6,1,5,),
-       (6,2,5,),
-       (6,3,5,),
-       (6,4,5,),
-       (6,5,5,),
-
-       (7,1,5,),
-       (7,2,5,),
-       (7,3,5,),
-       (7,4,5,),
-       (7,5,5,),
     ],mycursor)
 
     mydb.commit()
 
 
 
-def insertarUna(Cupo,pregunta,respuesta):
+def obtenerPromedioPorProfesor(idProfe):
     mydb = mysql.connector.connect(
         host="localhost",
-        user=env.dbuser,
-        password=env.dbpassword,
+        user=dbuser,
+        password=dbpassword,
         database = "proyectoprofes"
     )
 
     mycursor = mydb.cursor();
-
-    insertarDatos("Encuestas","Cupo,pregunta,respuesta", "%s,%s,%s",[
-        (Cupo,pregunta,respuesta,),],mycursor)
     
-    mydb.commit()
+    comando = """
+            select Materias.Materia as Materia, preguntas.Pregunta as pregunta , avg(encuestas.respuesta)
+            from (((
+            (profesores  inner join profesorxmateria on profesores.ID = profesorxmateria.Profesor
+            inner join materias on profesorxmateria.ID = Materias.ID
+            )
+            inner join inscripciones on profesorxmateria.ID= inscripciones.Materia)
+            inner join encuestas on inscripciones.ID = encuestas.cupo
+            inner join preguntas on encuestas.pregunta=preguntas.ID
+            ))  where(profesores.id = %s)   group by Materia, pregunta;
+
+        """%(idProfe)
+    
+    mycursor.execute(comando)
+    encuestasPorProfe =mycursor.fetchall()
+
+    for x in encuestasPorProfe:
+
+        '''Aqui deberiamos hacer cualquier calculo o lo que sea con la info de las materias del profesor'''
+        print(x)
+
+        
+
 
 
 def login(username, password):
     mydb = mysql.connector.connect(
         host="localhost",
-        user=env.dbuser,
-        password=env.dbpassword,
+        user=dbuser,
+        password=dbpassword,
         database = "proyectoprofes"
     )
     mycursor = mydb.cursor();
@@ -410,40 +343,18 @@ def login(username, password):
     return (result[0][0])
 
 
-
-def registrarInscribir(cedula,nombre,email,carrera,idMateria):
-    mydb = mysql.connector.connect(
-        host="localhost",
-        user=env.dbuser,
-        password=env.dbpassword,
-        database = "proyectoprofes"
-    )
-
-    mycursor = mydb.cursor();
-
-    mydb.commit()
-    insertarDatos("Alumnos", "Cedula,Nombre,Email,Carrera","%s,%s,%s,%s",
-                  [
-        (cedula,nombre,email, carrera,),
-        
-    ],mycursor)
-    mydb.commit()
-    idEstudiante =mycursor.lastrowid
-
-    
-    insertarDatos("inscripciones", "Alumno,Materia","%s,%s",
-                  [
-        (idEstudiante, idMateria,),
-    ],mycursor)
-    
-    mydb.commit()
-
-
-
 '''
 
 EJECUTA ESTAS 2 FUNCIONES PRIMERO
+creamos la base de datos
+
+
+
+
 createDatabase()
+
+creamos las tablas
+
 
 
 createTables()
@@ -456,40 +367,3 @@ seedTables()
 
 insertarEncuestasSinExcel()
 '''
-
-
-
-'''
-CODIGO PA INSERTAR ENCUESTAS DE BD, SI QUIERES QUE SEA DE ing de software sumale 1 al cupo
-
-
-mydb = mysql.connector.connect(
-        host="localhost",
-        user=env.dbuser,
-        password=env.dbpassword,
-        database = "proyectoprofes"
-    )
-
-
-mycursor = mydb.cursor();
-insertarDatos("Encuestas","Cupo,pregunta,respuesta", "%s,%s,%s",[
-       (4,1,1,),
-       (4,2,2,),
-       (4,3,3,),
-       (4,4,4,),
-       (4,5,5,),
-
-       (5,1,1,),
-       (5,2,1,),
-       (5,3,1,),
-       (5,4,1,),
-       (5,5,1,),
-
-       (6,1,5,),
-       (6,2,5,),
-       (6,3,5,),
-       (6,4,5,),
-       (6,5,5,),
-   ],mycursor)
-mydb.commit();'''
-

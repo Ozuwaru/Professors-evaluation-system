@@ -101,3 +101,38 @@ def consultaP(preg):
 
 
 
+def consultaPreguntas():
+    mycursor = mydb.cursor();
+    comando = """
+        SELECT Pregunta FROM proyectoprofes.preguntas
+        """
+    
+    mycursor.execute(comando)
+    v =mycursor.fetchall()
+
+    return v;
+
+def consultaRespuestas():
+    mycursor = mydb.cursor();
+    comando = """
+        SELECT Respuesta FROM proyectoprofes.respuestas
+        """
+    
+    mycursor.execute(comando)
+    v =mycursor.fetchall()
+
+    return v;
+
+def MateriasSinFormularios():
+    mycursor = mydb.cursor();
+    comando = """
+        SELECT p.ID, m.Materia FROM profesorxmateria p
+        inner join materias m on p.Materia= m.ID
+        where encuesta is null;
+        """
+    
+    mycursor.execute(comando)
+    v =mycursor.fetchall()
+
+    return v;
+
