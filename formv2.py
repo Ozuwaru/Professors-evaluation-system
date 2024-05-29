@@ -139,9 +139,7 @@ def obtenerInfo(id):
     print(json.dumps(r, sort_keys=True, indent=4, separators=(",", ": ")))
 
 
-def cargarInfo():
 
-    
 def mostrarFormularios():
     try:
         page_token = None

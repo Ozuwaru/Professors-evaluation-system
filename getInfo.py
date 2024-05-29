@@ -187,6 +187,13 @@ def insertarFormID(idMateria,idForm, link):
 
     mydb.commit()
 
+def seedF():
+    #Esta funcion guarda los links de estadistica 1 y 2, Bases de datos y ingenieria de sofware
+    insertarFormID(1,'1qQAJVKbvG71qSz-YpU90qC0jDm61eB5NkBKweO2CotA','https://docs.google.com/forms/d/e/1FAIpQLSd1MRYsQk2sfEG8MjFTfIrwnhm-4H3p3JNZDINeEOUMJ1YWHw/viewform')
+    insertarFormID(2,'1RoBTHdGWiHMj2GjDCApZCSH78vqDiOGm-08wQEfvpBI','https://docs.google.com/forms/d/e/1FAIpQLSewyviqspnV7kXJSd9sRR9W2NEw_YO8gtiOSjDQbZ0U1xWU1g/viewform')
+
+    insertarFormID(3,'1Ieii-m3NLkLtvmuCSzKdXo1Ni7vvSqGV1RQmrHKMtpk','https://docs.google.com/forms/d/e/1FAIpQLScQ-i_bkTgUa39s6mFPyzkUoazV594mihnXSbSFJWV9chikVQ/viewform')
+    insertarFormID(4,'1gJGNYWe5LbRXH9kImoqV38BLYG1gLULUFiPmsjgBc28','https://docs.google.com/forms/d/e/1FAIpQLSda6PHt-L59ekt_njY-98VQTjBVIK_2qkXPNZHizq8QwOpoFg/viewform')
 
 
 
