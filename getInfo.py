@@ -107,7 +107,8 @@ def createTables():
             Create table Preguntas(
 
             ID INT NOT NULL AUTO_INCREMENT primary KEY,
-            Pregunta varchar (60)
+            Pregunta varchar (60),
+            Fecha Date
             );
 
             Create table Respuestas(
@@ -139,6 +140,12 @@ def createTables():
                 
             );
 
+
+
+            alter table  profesorxmateria add encuesta  varchar (80);
+            alter table  profesorxmateria add linkEncuesta  text;
+            alter table inscripciones add encuestado bool;
+
         '''
     )
 
@@ -161,6 +168,34 @@ def insertarDatos(tabla,columnas,cantidad, info ,cursor):
     seedtables es la funcion para llenar las tablas de info de prueba, debe ser llamada al instalar la app o 
     al abrirla por primera vez
 '''
+
+
+
+
+def insertarFormID(idMateria,idForm, link):
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user=env.dbuser,
+        password=env.dbpassword,
+        database = "proyectoprofes"
+    )
+    mycursor = mydb.cursor();
+    comando = '''update profesorxmateria 
+        set encuesta = %s,
+        linkEncuesta = %s
+        where ID = %s'''
+    mycursor.execute(comando,(idForm,link,idMateria))
+
+    mydb.commit()
+
+def seedF():
+    #Esta funcion guarda los links de estadistica 1 y 2, Bases de datos y ingenieria de sofware
+    insertarFormID(1,'1qQAJVKbvG71qSz-YpU90qC0jDm61eB5NkBKweO2CotA','https://docs.google.com/forms/d/e/1FAIpQLSd1MRYsQk2sfEG8MjFTfIrwnhm-4H3p3JNZDINeEOUMJ1YWHw/viewform')
+    insertarFormID(2,'1RoBTHdGWiHMj2GjDCApZCSH78vqDiOGm-08wQEfvpBI','https://docs.google.com/forms/d/e/1FAIpQLSewyviqspnV7kXJSd9sRR9W2NEw_YO8gtiOSjDQbZ0U1xWU1g/viewform')
+
+    insertarFormID(3,'1Ieii-m3NLkLtvmuCSzKdXo1Ni7vvSqGV1RQmrHKMtpk','https://docs.google.com/forms/d/e/1FAIpQLScQ-i_bkTgUa39s6mFPyzkUoazV594mihnXSbSFJWV9chikVQ/viewform')
+    insertarFormID(4,'1gJGNYWe5LbRXH9kImoqV38BLYG1gLULUFiPmsjgBc28','https://docs.google.com/forms/d/e/1FAIpQLSda6PHt-L59ekt_njY-98VQTjBVIK_2qkXPNZHizq8QwOpoFg/viewform')
+
 
 
 def seedTables():
@@ -236,6 +271,7 @@ def seedTables():
 
     insertarDatos("Materias","Materia", "%s",
                   [
+                    ("Estadistica 1",),
                     ("Estadistica 2",),
                     ("Bases de datos",),
                     ("INGENIERIA DE SOFTWARE",),
@@ -248,10 +284,12 @@ def seedTables():
                       ("1","1",),
                       ("1","2",),
                       ("1","3",),
+                      ("1","4",),
 
                       ("2","1",),
                       ("2","2",),
                       ("2","3",),
+                      ("2","4",),
                       ],mycursor)
     
 
@@ -259,8 +297,9 @@ def seedTables():
     insertarDatos("ProfesorxMateria", "Profesor,Materia,Seccion","%s,%s,%s",
                   [
         ('1','1', '3D1',),
-        ('2','2', '3D1',),
-        ('3','3', '3D1',),
+        ('1','2', '3D1',),
+        ('2','3', '3D1',),
+        ('3','4', '3D1',),
     ],mycursor)
     mydb.commit()
 
@@ -268,16 +307,17 @@ def seedTables():
     insertarDatos("inscripciones", "Alumno,Materia","%s,%s",
                   [
         ('1', '1',),
+        ('1', '2',),
         ('2', '1',),
         ('3', '1',),
-
-        ('1', '2',),
-        ('2', '2',),
-        ('3', '2',),
 
         ('1', '3',),
         ('2', '3',),
         ('3', '3',),
+
+        ('1', '4',),
+        ('2', '4',),
+        ('3', '4',),
     ],mycursor)
     
     mydb.commit()
@@ -302,6 +342,8 @@ def insertarEncuestasSinExcel():
         (1,4,4,),
         (1,5,5,),
 
+
+
         (2,1,1,),
         (2,2,1,),
         (2,3,1,),
@@ -313,11 +355,51 @@ def insertarEncuestasSinExcel():
         (3,3,5,),
         (3,4,5,),
         (3,5,5,),
+
+        (4,1,5,),
+        (4,2,5,),
+        (4,3,5,),
+        (4,4,5,),
+        (4,5,5,),
+
+        
+       (5,1,1,),
+       (5,2,1,),
+       (5,3,1,),
+       (5,4,1,),
+       (5,5,1,),
+
+       (6,1,5,),
+       (6,2,5,),
+       (6,3,5,),
+       (6,4,5,),
+       (6,5,5,),
+
+       (7,1,5,),
+       (7,2,5,),
+       (7,3,5,),
+       (7,4,5,),
+       (7,5,5,),
     ],mycursor)
 
     mydb.commit()
 
 
+
+def insertarUna(Cupo,pregunta,respuesta):
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user=env.dbuser,
+        password=env.dbpassword,
+        database = "proyectoprofes"
+    )
+
+    mycursor = mydb.cursor();
+
+    insertarDatos("Encuestas","Cupo,pregunta,respuesta", "%s,%s,%s",[
+        (Cupo,pregunta,respuesta,),],mycursor)
+    
+    mydb.commit()
 
 
 def login(username, password):
@@ -334,6 +416,36 @@ def login(username, password):
     result = mycursor.fetchall()
 
     return (result[0][0])
+
+
+
+def registrarInscribir(cedula,nombre,email,carrera,idMateria):
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user=env.dbuser,
+        password=env.dbpassword,
+        database = "proyectoprofes"
+    )
+
+    mycursor = mydb.cursor();
+
+    mydb.commit()
+    insertarDatos("Alumnos", "Cedula,Nombre,Email,Carrera","%s,%s,%s,%s",
+                  [
+        (cedula,nombre,email, carrera,),
+        
+    ],mycursor)
+    mydb.commit()
+    idEstudiante =mycursor.lastrowid
+
+    
+    insertarDatos("inscripciones", "Alumno,Materia","%s,%s",
+                  [
+        (idEstudiante, idMateria,),
+    ],mycursor)
+    
+    mydb.commit()
+
 
 
 '''
@@ -366,6 +478,7 @@ mydb = mysql.connector.connect(
         database = "proyectoprofes"
     )
 
+
 mycursor = mydb.cursor();
 insertarDatos("Encuestas","Cupo,pregunta,respuesta", "%s,%s,%s",[
        (4,1,1,),
@@ -387,3 +500,4 @@ insertarDatos("Encuestas","Cupo,pregunta,respuesta", "%s,%s,%s",[
        (6,5,5,),
    ],mycursor)
 mydb.commit();'''
+

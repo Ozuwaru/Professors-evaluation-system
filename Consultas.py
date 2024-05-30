@@ -73,4 +73,139 @@ def consultaCorreosPorMateria(idMateria):
     return Alumnos;
 
 
-print(consultaCorreosPorMateria(1))
+def consultaInscripcionPorCorreo(correo):
+    mycursor = mydb.cursor();
+    
+    comando = """
+           
+            Select i.ID from Alumnos
+            inner join inscripciones i on alumnos.ID = i.Alumno
+            where (alumnos.email like '%s') AND (i.Materia =2);
+        """%(correo)
+    mycursor.execute(comando)
+    idInscrip =mycursor.fetchone()
+    return idInscrip
+
+def consultaP(preg):
+    mycursor = mydb.cursor();
+    
+    comando = """
+           
+            SELECT ID FROM proyectoprofes.respuestas
+            where Respuesta like '%s'
+        """%(preg)
+    mycursor.execute(comando)
+    v =mycursor.fetchone()
+
+    return v[0];
+
+
+
+def consultaPreguntas():
+    mycursor = mydb.cursor();
+    comando = """
+        SELECT Pregunta FROM proyectoprofes.preguntas
+        """
+    
+    mycursor.execute(comando)
+    v =mycursor.fetchall()
+
+    return v;
+
+def consultaRespuestas():
+    mycursor = mydb.cursor();
+    comando = """
+        SELECT Respuesta FROM proyectoprofes.respuestas
+        """
+    
+    mycursor.execute(comando)
+    v =mycursor.fetchall()
+
+    return v;
+
+def MateriasSinFormularios():
+    mycursor = mydb.cursor();
+    comando = """
+        SELECT p.ID, m.Materia FROM profesorxmateria p
+        inner join materias m on p.Materia= m.ID
+        where encuesta is null;
+        """
+    
+    mycursor.execute(comando)
+    v =mycursor.fetchall()
+
+    return v;
+
+def MateriasConFormularios():
+    mycursor = mydb.cursor();
+    comando = """
+        SELECT p.ID,p.encuesta FROM profesorxmateria p
+        inner join materias m on p.Materia= m.ID
+        where encuesta is not null;
+
+        """
+    
+    mycursor.execute(comando)
+    v =mycursor.fetchall()
+
+    return v;
+
+
+def AlumnosSinEncuestar(idMateria):
+    mycursor = mydb.cursor();
+
+
+    comando = """
+           
+            select a.Nombre, a.Email from profesorxmateria m inner join inscripciones i
+            on m.Materia = i.Materia inner join alumnos a on i.Alumno =a.ID
+            where (i.encuestado is null and m.ID=%s);
+        """%(idMateria)
+    mycursor.execute(comando)
+
+    v =mycursor.fetchall()
+
+
+    comando = '''
+        update inscripciones set encuestado = true 
+        where materia = %s;'''
+    mycursor.execute(comando,(idMateria,))
+
+    mydb.commit()
+
+    return v
+
+
+def cupoR(idMateria):
+    mycursor = mydb.cursor();
+
+
+    comando = """
+           select ID from inscripciones where Materia=%s limit 1;
+        """%(idMateria)
+    mycursor.execute(comando)
+
+    v =mycursor.fetchone()
+
+    return v
+
+
+
+def actualizarDB():
+    mycursor = mydb.cursor();
+
+
+
+
+
+    comando = '''
+        SET SQL_SAFE_UPDATES = 0;
+        '''
+    mycursor.execute(comando)
+    mydb.commit()
+    comando = '''
+        delete from encuestas;
+
+        '''
+    mycursor.execute(comando)
+    mydb.commit()
