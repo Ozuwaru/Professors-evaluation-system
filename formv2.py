@@ -2,7 +2,7 @@ from apiclient import discovery
 from httplib2 import Http
 from oauth2client.service_account import (ServiceAccountCredentials)
 from googleapiclient.errors import HttpError
-from BDconsultas import MateriasSinFormularios,consultaPreguntas,consultaRespuestas,MateriasConFormularios,consultaP,actualizarDB
+from BDconsultas import MateriasSinFormularios,consultaPreguntas,consultaRespuestas,MateriasConFormularios,consultaP,actualizarDB,CedulasInscritas,cantP
 from BD import insertarFormID,insertarUna
 import json
 SCOPES = ["https://www.googleapis.com/auth/forms.body",'https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
@@ -67,9 +67,29 @@ def crearObj(pregunta,respuestas, index):
 def crearForm(nombreMateria):
 
     objPreg =[]
+    obj ={
+        "createItem": {
+                    "item": {
+                        "title": (
+                            "Ingrese su cedula por favor: "
+                        ),
+                        "questionItem": {
+                            "question": {
+                                "required": True,
+                                "textQuestion": {
+                                    "paragraph": False
+                                },
+                            }
+                        },
+                    },
+                    "location": {"index": 0},
+                }
+    }
+    objPreg.append(obj)
+
     global preguntas
     global respuestas
-    index =0
+    index =1
     for p in preguntas:
         objPreg.append( crearObj(p,respuestas,index))
         index+=1
@@ -137,20 +157,39 @@ def crearFormularios():
 
 def obtenerInfo(id,idMateria):
     r  = form_service.forms().responses().list(formId=id).execute()
-    print(json.dumps(r, sort_keys=True, indent=4, separators=(",", ": ")))
+    cedulas=CedulasInscritas(idMateria)
+    #print(json.dumps(r, sort_keys=True, indent=4, separators=(",", ": ")))
     #print('\n')
+    cantidadP = cantP()
     
-    '''if 'responses' in r:
+    if 'responses' in r:
         for res in r['responses']:
+            cedula=0
+            verC=False
             data= []
             #print('nueva respuesta')
             for a in res['answers']:
-                data.append(res['answers'][a]['textAnswers']['answers'][0]['value'])
+                if (res['answers'][a]['textAnswers']['answers'][0]['value']).isnumeric():
+                    cedula= res['answers'][a]['textAnswers']['answers'][0]['value']
 
-            for i in range(5):
-                data[i]=consultaP(data[i])
-                insertarUna(idMateria,i+1,data[i])'''
+                    if cedula in cedulas:
+                        verC=True
+
+                    else:
+                        break
+
+
+                else:
+                    
+                    data.append(res['answers'][a]['textAnswers']['answers'][0]['value'])
                 
+            if verC:
+                for i in range(cantidadP):
+                    data[i]=consultaP(data[i])
+                    insertarUna(idMateria,i+1,data[i])
+
+    print("Info cargada para %s"%(idMateria))
+                    
 
 
 
@@ -162,6 +201,7 @@ def cargarInfo():
     #print(materias)
     for m in materias:
         obtenerInfo(m[1],m[0])
+    print('info Cargada correctamente')
 
 
 def borrarF(id):
@@ -172,7 +212,7 @@ def borrarF(id):
     print('formulario borrado')
 
 
-def mostrarFormularios():
+def mostrarFormularios(borrar=False):
     try:
         page_token = None
 
@@ -191,8 +231,10 @@ def mostrarFormularios():
                 
 
             # Process change
-                print (file['id'])
-                #borrarF(file['id'])
+                if borrar:
+                    borrarF(file['id'])
+                else:
+                    print (file['id'])
             page_token = response.get('nextPageToken', None)
             if page_token is None:
                 break       
@@ -202,4 +244,3 @@ def mostrarFormularios():
         print(f'An error occurred: {error}')
 
 
-crearFormularios()

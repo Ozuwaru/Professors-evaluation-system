@@ -1,6 +1,7 @@
 
 import BDclave as BDclave;
 import mysql.connector;
+from datetime import datetime
 
 
 mydb = mysql.connector.connect(
@@ -129,7 +130,7 @@ def consultaP(preg):
     mycursor = mydb.cursor()
     
     comando = """
-            SELECT ID FROM proyectoprofes.respuestas
+            SELECT ID,Categproa FROM proyectoprofes.respuestas
             where Respuesta like '%s'
         """%(preg)
     mycursor.execute(comando)
@@ -140,7 +141,7 @@ def consultaP(preg):
 def consultaPreguntas():
     mycursor = mydb.cursor();
     comando = """
-        SELECT Pregunta FROM proyectoprofes.preguntas
+        SELECT Pregunta,Categoria FROM proyectoprofes.preguntas
         """
     
     mycursor.execute(comando)
@@ -278,3 +279,42 @@ def actualizarContra(user,nueva,repeat):
         return False
     
 
+def CedulasInscritas(idM):
+    mycursor = mydb.cursor();
+    comando = """
+        Select a.Cedula from inscripciones i 
+        inner join alumnos a
+        on i.Alumno = a.ID
+        where Materia = %s
+        """%(idM)
+    mycursor.execute(comando)
+    cedulas =mycursor.fetchall()
+    index =0
+    for i in cedulas:
+        #i[0]
+        cedulas[index]=i[0]
+        index+=1
+    cedulas.sort()
+    return cedulas
+
+
+def cantP():
+    mycursor = mydb.cursor();
+    comando = """SELECT COUNT(ID) AS preguntas FROM preguntas;"""
+    mycursor.execute(comando)
+    c =mycursor.fetchone()
+    
+    return c[0]
+
+
+def guardarFechaEnvioEncuestas(idMateria):
+    fecha =datetime.today().strftime('%d-%m-%Y')
+    print(fecha)  
+
+    mycursor = mydb.cursor();
+    comando =     'Update profesorxmateria set fechaForm = "%s" where ID =%s;'%(fecha,idMateria)
+    print(comando)
+    #mycursor.execute(comando)
+    print('fecha guardada correctamente')
+
+guardarFechaEnvioEncuestas(1)

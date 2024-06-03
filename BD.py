@@ -24,6 +24,20 @@ def createTables():
     mycursor = mydb.cursor()    
     mycursor.execute(
         '''
+            create table Usuarios (
+                ID int not null auto_increment,
+                username varchar (15) not null unique,
+                uPassword varchar(30) not null,
+                nombre varchar(30) not null,
+                apellido varchar(30) not null,
+                escuela varchar(20),
+                telefono varchar(20),
+                correo varchar(30),
+                direccion varchar(30),
+                primary key (ID)
+                
+            );
+
             CREATE TABLE Escuelas (
             ID  int auto_increment not null,
             Escuela varchar(20),
@@ -70,7 +84,6 @@ def createTables():
             foreign key (Escuela) references Escuelas(ID)
             );
 
-
             CREATE TABLE Alumnos (
             ID int auto_increment not null,
             Cedula varchar(20) not null unique,
@@ -98,11 +111,18 @@ def createTables():
             foreign key (Materia) references ProfesorxMateria(ID)
             );
 
+            CREATE TABLE Categorias(
+            ID INT NOT NULL AUTO_INCREMENT primary KEY,
+            Categoria VARCHAR(45)
+                
+            );
+
             Create table Preguntas(
 
             ID INT NOT NULL AUTO_INCREMENT primary KEY,
-            Pregunta varchar (60),
-            Fecha Date
+            Categoria int not null,
+            Pregunta varchar (150),
+            foreign key (Categoria) references Categorias(ID)
             );
 
             Create table Respuestas(
@@ -114,42 +134,32 @@ def createTables():
 
             Create table Encuestas(
 
-            ID int not null auto_increment primary key,
-            Materia Int not null ,
-            pregunta int not null,
-            respuesta int not null, 
-            foreign key (Materia) references ProfesorxMateria(ID),
-            foreign key (pregunta) references preguntas(ID),
-            foreign key (respuesta) references respuestas(ID)
+                ID int not null auto_increment primary key,
+                Materia Int not null ,
+                pregunta int not null,
+                respuesta int not null,
+
+                foreign key (Materia) references ProfesorxMateria(ID),
+                foreign key (pregunta) references preguntas(ID),
+                foreign key (respuesta) references respuestas(ID)
 
             );
 
 
         
-            create table Usuarios (
-                ID int not null auto_increment,
-                username varchar (15) not null unique,
-                uPassword varchar(30) not null,
-                nombre varchar(30) not null,
-                apellido varchar(30) not null,
-                escuela varchar(20),
-                telefono varchar(20),
-                correo varchar(30),
-                direccion varchar(30),
-                primary key (ID)
-                
-            );
+            
 
 
 
             alter table  profesorxmateria add encuesta  varchar (80);
+            alter table profesorxmateria add FechaForm Date;
             alter table  profesorxmateria add linkEncuesta  text;
             alter table inscripciones add encuestado bool;
+            
 
         '''
     )
-
-
+   
     print("tables created succesfully");
 
     mycursor.close()
@@ -177,6 +187,24 @@ def insertarFormID(idMateria,idForm, link):
 
     mydb.commit()
 
+
+def insertarFechaForm(idMateria,date):
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user=BDclave.db_user,
+        password=BDclave.db_password,
+        database = "proyectoprofes"
+    )
+    mycursor = mydb.cursor();
+    comando = '''update profesorxmateria 
+        set date = %s,
+        where ID = %s'''
+    mycursor.execute(comando,(date,idMateria))
+
+    mydb.commit()
+
+
+
 def seedF():
     #Esta funcion guarda los links de estadistica 1 y 2, Bases de datos y ingenieria de sofware
     insertarFormID(1,'1SIGXyaM0_D03ury4SmLi8e6qqKAjynT1G5dtWceKJAA', 'https://docs.google.com/forms/d/e/1FAIpQLScKQfDluYIemITOOYuk0xSsMBG2ZzIVXsRbbSGMldSpi2ZjfA/viewform')
@@ -197,12 +225,35 @@ def seedTables():
     insertarDatos('usuarios', 'username,uPassword,nombre,apellido,escuela,telefono,correo,direccion','%s,%s,%s,%s,%s,%s,%s,%s',
                 [('aura','123456789','Aura','Apellido','Ingenieria','0424-000000','aura@gmail.com','Su casa',),],mycursor)
     
-    insertarDatos("preguntas","pregunta","%s",[
-        ("¿El docente entrega las notas a tiempo?",),
-        ("¿El docente trae material suficiente?",),
-        ("¿El docente tiene buena metodologia al explicar?",),
-        ("¿El docente evalua de manera justa?",),
-        ("¿El docente llega a la hora de clases?",)],
+
+
+
+
+    insertarDatos("categorias","Categoria","%s",[
+        ("Organizacion",),
+        ("Dinamica pedagogica",),
+        ("Criterios de calificacion",),
+        ("Rasgos Academicos",),],
+        mycursor)
+    
+    insertarDatos("preguntas","pregunta,Categoria","%s,%s",[
+        ("Inicia y termina sus clases puntualmente.",1,),
+        ("Desarrolla el curso de manera ordenada y cubriendo los objetivos planteados.",1,),
+        (" Prevé el uso de recursos y materiales necesarios para la clase.",1,),
+
+
+        ("Explica los temas del programa y atiende dudas de manera clara y precisa.",2,),
+        (" Fomenta el uso correcto de la expresión oral y escrita.",2,),
+        ("Discute y relaciona ejemplos reales con los temas tratados en clase.",2,),
+
+        ("Evalúa de acuerdo con los contenidos y criterios presentados al inicio del curso",3,),
+        (" Considera y evalúa las tareas relacionadas con el programa.",3,),
+
+
+        ("Muestra interés por el desempeño de los/as estudiantes.",4,),
+        ("Muestra disposición para consultarlo/a, dentro y fuera de clase.",4,),
+        ("Motiva y fomenta la ética, los valores y el respeto.",4,),
+        ],
         mycursor)
 
     insertarDatos("respuestas","Respuesta", "%s",[
@@ -303,53 +354,7 @@ def insertarEncuestasSinExcel():
 
     mycursor = mydb.cursor()
 
-    insertarDatos("Encuestas","Materia,pregunta,respuesta", "%s,%s,%s",[
-        (1,1,1,),
-        (1,2,2,),
-        (1,3,3,),
-        (1,4,4,),
-        (1,5,5,),
-
-
-
-        (2,1,1,),
-        (2,2,1,),  
-        (2,3,1,),
-        (2,4,1,),
-        (2,5,1,),
-
-        (3,1,5,),
-        (3,2,5,),
-        (3,3,5,),
-        (3,4,5,),
-        (3,5,5,),
-
-        (4,1,5,),
-        (4,2,5,),
-        (4,3,5,),
-        (4,4,5,),
-        (4,5,5,),
-
-        
-        (2,1,1,),
-        (2,2,1,),
-        (2,3,1,),
-        (2,4,1,),
-        (2,5,1,),
-
-        (1,1,5,),
-        (1,2,5,),
-        (1,3,5,),
-        (1,4,5,),
-        (1,5,5,),
-
-        (3,1,5,),
-        (3,2,5,),
-        (3,3,5,),
-        (3,4,5,),
-        (3,5,5,),],
-        mycursor)
-
+    
     mydb.commit()
     
 def insertarUna(Cupo,pregunta,respuesta):
@@ -406,50 +411,10 @@ def registrarInscribir(cedula,nombre,email,carrera,idMateria):
     
     mydb.commit()
 
-'''
-EJECUTA ESTAS 2 FUNCIONES PRIMERO
-createDatabase()
-createTables()
 
-luego EJECUTA ESTAS 2
-seedTables()
-insertarEncuestasSinExcel()
-
-CODIGO PA INSERTAR ENCUESTAS DE BD, SI QUIERES QUE SEA DE ing de software sumale 1 al cupo
-
-mydb = mysql.connector.connect(
-        host="localhost",
-        user=BDclave.dbuser,
-        password=env.dbpassword,
-        database = "proyectoprofes"
-    )
-
-mycursor = mydb.cursor();
-insertarDatos("Encuestas","Cupo,pregunta,respuesta", "%s,%s,%s",[
-       (4,1,1,),
-       (4,2,2,),
-       (4,3,3,),
-       (4,4,4,),
-       (4,5,5,),
-
-       (5,1,1,),
-       (5,2,1,),
-       (5,3,1,),
-       (5,4,1,),
-       (5,5,1,),
-
-       (6,1,5,),
-       (6,2,5,),
-       (6,3,5,),
-       (6,4,5,),
-       (6,5,5,),],
-       mycursor)
-mydb.commit();
-'''
 
 #createDatabase()
 #createTables()
-
 #seedTables()
 #insertarEncuestasSinExcel()
 #seedF()
