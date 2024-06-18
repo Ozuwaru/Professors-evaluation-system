@@ -15,15 +15,18 @@ This app was made by Victor Rojas, Frank Diaz and myself Oswald Torrealba, i was
       'pip install pyqt6'
   </li>
   <li>
-    Once you have installed all of the modules required, you'll need to start the database, so in the file 'DB.py' run the        following funtions
+        At this point you'll need to connect to your MySQL connection, so change the 'env.py' file and update to your             username and password:
+    
+      dbuser =  YourUsername
+      dbpassword  = YourPassword
   </li>
   <li>
+    Once you have installed all of the modules required, you'll need to start the database, so in the file 'BD.py' run the        following funtions:
     
+        createDatabase()
+        createTables()
   </li>
   <li>
-    
-  </li>
-  <li>
-    
+    Now you should have both the database and tables, but no info inside of them, so you'll need to insert it, you can do it easily with [[this function has not been written yet]]
   </li>
 </ol>
